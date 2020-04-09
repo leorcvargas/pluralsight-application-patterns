@@ -20,9 +20,6 @@ export default class User {
     public signInCount: number;
     public lastLoginAt: Date;
     public currentLoginAt: Date;
-    public currentSessionToken: string | null;
-    public reminderSentAt: Date | null;
-    public reminderToken: string | null;
     public authenticationToken: string;
 
     constructor(args: UserArgs) {
@@ -33,9 +30,6 @@ export default class User {
             signInCount,
             lastLoginAt,
             currentLoginAt,
-            currentSessionToken,
-            reminderSentAt,
-            reminderToken,
             authenticationToken,
         } = args;
 
@@ -45,9 +39,6 @@ export default class User {
         this.signInCount = signInCount || 0;
         this.lastLoginAt = lastLoginAt || new Date();
         this.currentLoginAt = currentLoginAt || new Date();
-        this.currentSessionToken = currentSessionToken || null;
-        this.reminderSentAt = reminderSentAt || null;
-        this.reminderToken = reminderToken || null;
         this.authenticationToken = authenticationToken || generateRandomUUID();
     }
 }
