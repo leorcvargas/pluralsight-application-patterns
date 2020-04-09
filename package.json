@@ -4,15 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --verbose",
+    "test:watch": "jest --verbose --watch"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "uuid": "^7.0.3"
+  },
   "devDependencies": {
     "@types/jest": "^25.2.1",
+    "@types/uuid": "^7.0.2",
     "jest": "^25.3.0",
     "ts-jest": "^25.3.1",
+    "tslint": "^6.1.1",
     "typescript": "^3.8.3"
   }
 }
