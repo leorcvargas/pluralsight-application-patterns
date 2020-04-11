@@ -1,5 +1,6 @@
 import Application, { ApplicationArgs } from '../models/application';
 import { User, UserModel } from '../models/user';
+import { DocumentType } from '@typegoose/typegoose';
 
 export interface RegistrationResult {
   success: boolean;
@@ -20,10 +21,12 @@ export default class Registration {
     }
 
     if (application.isValid()) {
+      const user = await this.saveUser(args);
+
       return this.buildRegistrationResult({
-        user: new User({ email: args.email }),
         message: 'Welcome!',
         success: true,
+        user,
       });
     }
 
@@ -32,6 +35,20 @@ export default class Registration {
       message: application.message,
     });
   };
+
+  private async saveUser({
+    email,
+    password,
+  }: ApplicationArgs): Promise<DocumentType<User>> {
+    const userData = new User({
+      email,
+      password,
+      status: 'approved',
+    });
+    const user = await UserModel.create(userData);
+
+    return user;
+  }
 
   private buildRegistrationResult(
     args: Partial<RegistrationResult>,

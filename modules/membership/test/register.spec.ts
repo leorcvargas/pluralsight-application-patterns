@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 import Registration, { RegistrationResult } from '../lib/registration';
 
-const registration = new Registration();
-
 describe('Registration', () => {
+  const registration = new Registration();
   beforeAll(async () => {
     await mongoose.connect(String(process.env.MONGO_URL), {
       useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
   });
 
@@ -18,12 +18,20 @@ describe('Registration', () => {
   describe('a valid application', () => {
     let registrationResult: RegistrationResult;
 
-    beforeAll(async () => {
-      registrationResult = await registration.applyForMemberShip({
-        email: 'leo@dev.com',
-        password: 'foobar',
-        confirmPassword: 'foobar',
-      });
+    beforeAll((done) => {
+      registration
+        .applyForMemberShip({
+          email: 'leo@dev.com',
+          password: 'foobar',
+          confirmPassword: 'foobar',
+        })
+        .then((data) => {
+          registrationResult = data;
+          done();
+        })
+        .catch((err) => {
+          throw err;
+        });
     });
 
     it('is successful', () => {
@@ -32,11 +40,16 @@ describe('Registration', () => {
 
     it('creates a user', () => {
       expect(registrationResult.user).toBeDefined();
+      expect(registrationResult.user?.password).not.toBe('foobar');
     });
 
-    it.todo('creates a log entry');
-    it.todo('sets the user status to approved');
-    it.todo('offers a welcome message');
+    it('sets the user status to approved', () => {
+      expect(registrationResult.user?.status).toBe('approved');
+    });
+
+    it('offers a welcome message', () => {
+      expect(registrationResult.message).toBe('Welcome!');
+    });
   });
 
   describe('an empty or null email', () => {

@@ -2,7 +2,7 @@ import { User } from '../models/user';
 
 describe('User', () => {
   describe('defaults', () => {
-    const user = new User({ email: 'leo@dev.com' });
+    const user = new User({ email: 'leo@dev.com', password: 'foobar' });
 
     it('email is leo@dev.com', () => {
       expect(user.email).toBe('leo@dev.com');
