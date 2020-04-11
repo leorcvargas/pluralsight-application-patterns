@@ -44,6 +44,7 @@ export default class Registration {
       email,
       password,
       status: 'approved',
+      signInCount: 1,
     });
     const user = await UserModel.create(userData);
 

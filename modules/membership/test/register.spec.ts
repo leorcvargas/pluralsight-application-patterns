@@ -50,6 +50,10 @@ describe('Registration', () => {
     it('offers a welcome message', () => {
       expect(registrationResult.message).toBe('Welcome!');
     });
+
+    it('increments the sign in count', () => {
+      expect(registrationResult.user?.signInCount).toBe(1);
+    });
   });
 
   describe('an empty or null email', () => {
