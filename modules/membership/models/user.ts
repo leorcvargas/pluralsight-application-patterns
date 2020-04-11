@@ -1,3 +1,5 @@
+import { prop, getModelForClass } from '@typegoose/typegoose';
+
 import { generateRandomUUID } from '../lib/utility';
 
 interface UserArgs {
@@ -13,13 +15,20 @@ interface UserArgs {
   authenticationToken?: string;
 }
 
-export default class User {
+export class User {
+  @prop()
   public email: string;
+  @prop()
   public createdAt: Date;
+  @prop()
   public status: string;
+  @prop()
   public signInCount: number;
+  @prop()
   public lastLoginAt: Date;
+  @prop()
   public currentLoginAt: Date;
+  @prop()
   public authenticationToken: string;
 
   constructor(args: UserArgs) {
@@ -42,3 +51,5 @@ export default class User {
     this.authenticationToken = authenticationToken || generateRandomUUID();
   }
 }
+
+export const UserModel = getModelForClass(User);
