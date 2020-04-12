@@ -3,6 +3,19 @@ import bcrypt from 'bcrypt';
 
 import { generateRandomUUID } from '../lib/utility';
 
+export interface UserInterface {
+  email: string;
+  password: string;
+  createdAt: Date;
+  status: string;
+  signInCount: number;
+  lastLoginAt: Date;
+  currentLoginAt: Date;
+  authenticationToken: string;
+}
+
+export type UserView = Omit<UserInterface, 'password'>;
+
 interface UserArgs {
   email: string;
   password: string;
@@ -11,16 +24,13 @@ interface UserArgs {
   signInCount?: number;
   lastLoginAt?: Date;
   currentLoginAt?: Date;
-  currentSessionToken?: string;
-  reminderSentAt?: Date;
-  reminderToken?: string;
   authenticationToken?: string;
 }
 
 @pre<User>('save', async function () {
   this.password = await bcrypt.hash(this.password, 10);
 })
-export class User {
+export class User implements UserInterface {
   @prop()
   public id!: string;
 
@@ -47,6 +57,18 @@ export class User {
 
   @prop()
   public authenticationToken: string;
+
+  public get view(): UserView {
+    return {
+      email: this.email,
+      createdAt: this.createdAt,
+      status: this.status,
+      signInCount: this.signInCount,
+      lastLoginAt: this.lastLoginAt,
+      currentLoginAt: this.currentLoginAt,
+      authenticationToken: this.authenticationToken,
+    };
+  }
 
   constructor(args: UserArgs) {
     const {
