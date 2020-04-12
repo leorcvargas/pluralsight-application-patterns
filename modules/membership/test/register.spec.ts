@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
 
 import Registration, { RegistrationResult } from '../lib/registration';
+import { UserModel } from '../models/user';
 
 describe('Registration', () => {
   const registration = new Registration();
+
   beforeAll(async () => {
     await mongoose.connect(String(process.env.MONGO_URL), {
       useNewUrlParser: true,
@@ -18,20 +20,16 @@ describe('Registration', () => {
   describe('a valid application', () => {
     let registrationResult: RegistrationResult;
 
-    beforeAll((done) => {
-      registration
-        .applyForMemberShip({
-          email: 'leo@dev.com',
-          password: 'foobar',
-          confirmPassword: 'foobar',
-        })
-        .then((data) => {
-          registrationResult = data;
-          done();
-        })
-        .catch((err) => {
-          throw err;
-        });
+    beforeAll(async () => {
+      registrationResult = await registration.applyForMemberShip({
+        email: 'leo@dev.com',
+        password: 'foobar',
+        confirmPassword: 'foobar',
+      });
+    });
+
+    afterAll(async () => {
+      await UserModel.deleteMany({});
     });
 
     it('is successful', () => {
@@ -57,22 +55,90 @@ describe('Registration', () => {
   });
 
   describe('an empty or null email', () => {
-    it.todo('is not successful');
-    it.todo('tells user that email is required');
+    let registrationResult: RegistrationResult;
+
+    beforeAll(async () => {
+      registrationResult = await registration.applyForMemberShip({
+        email: '',
+        password: 'foobar',
+        confirmPassword: 'foobar',
+      });
+    });
+
+    it('is not successful', () => {
+      expect(registrationResult.success).toBeFalsy();
+    });
+
+    it('tells user that email is required', () => {
+      expect(registrationResult.message).toBe(
+        'Email and password are required.',
+      );
+    });
   });
 
   describe('an empty or null password', () => {
-    it.todo('is not successful');
-    it.todo('tells user that password is required');
+    let registrationResult: RegistrationResult;
+
+    beforeAll(async () => {
+      registrationResult = await registration.applyForMemberShip({
+        email: 'leo@dev.com',
+        password: '',
+        confirmPassword: '',
+      });
+    });
+
+    it('is not successful', () => {
+      expect(registrationResult.success).toBeFalsy();
+    });
+
+    it('tells user that password is required', () => {
+      expect(registrationResult.message).toBe(
+        'Email and password are required.',
+      );
+    });
   });
 
   describe('password and confirm mismatch', () => {
-    it.todo('is not successful');
-    it.todo("tells user that passwords don't match");
+    let registrationResult: RegistrationResult;
+
+    beforeAll(async () => {
+      registrationResult = await registration.applyForMemberShip({
+        email: 'leo@dev.com',
+        password: 'aaaaaa',
+        confirmPassword: 'bbbbbbb',
+      });
+    });
+
+    it('is not successful', () => {
+      expect(registrationResult.success).toBeFalsy();
+    });
+
+    it("tells user that passwords don't match", () => {
+      expect(registrationResult.message).toBe("Passwords don't match.");
+    });
   });
 
   describe('email already exists', () => {
-    it.todo('is not successful');
-    it.todo('tells user that email already exists');
+    const apply = (): Promise<RegistrationResult> =>
+      registration.applyForMemberShip({
+        email: 'leo@dev.com',
+        password: 'foobar',
+        confirmPassword: 'foobar',
+      });
+
+    beforeAll(async () => {
+      await apply();
+    });
+
+    it('is not successful', async () => {
+      const result = await apply();
+
+      expect(result.success).toBeFalsy();
+    });
+    it('tells user that email already exists', async () => {
+      const result = await apply();
+
+      expect(result.message).toBe('Email already exists.');
+    });
   });
 });

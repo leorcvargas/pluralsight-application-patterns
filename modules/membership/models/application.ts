@@ -38,7 +38,7 @@ export default class Application {
     if (!email || !password) {
       this.setInvalid('Email and password are required.');
     } else if (this.password !== this.confirmPassword) {
-      this.setInvalid("Password don't match.");
+      this.setInvalid("Passwords don't match.");
     } else {
       this.setValid();
     }

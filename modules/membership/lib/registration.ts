@@ -20,19 +20,19 @@ export default class Registration {
       application.setInvalid('Email already exists.');
     }
 
-    if (application.isValid()) {
-      const user = await this.saveUser(args);
-
+    if (!application.isValid()) {
       return this.buildRegistrationResult({
-        message: 'Welcome!',
-        success: true,
-        user,
+        success: false,
+        message: application.message,
       });
     }
 
+    const user = await this.saveUser(args);
+
     return this.buildRegistrationResult({
-      success: false,
-      message: application.message,
+      message: 'Welcome!',
+      success: true,
+      user,
     });
   };
 
